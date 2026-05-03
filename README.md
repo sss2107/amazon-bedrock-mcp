@@ -1,112 +1,90 @@
 # Amazon Bedrock Converse API MCP Demo
 
-This is a demo of Anthropic's open source MCP used with Amazon Bedrock Converse API.  This combination allows for the MCP to be used with any of the many models supported by the Converse API.
+A small Python demo showing how to connect Anthropic's Model Context Protocol (MCP) tool pattern to Amazon Bedrock through the Converse API. The app runs an interactive CLI agent, discovers MCP tools, sends user messages to Bedrock, and executes tool calls when the model requests them.
+
+## What This Project Shows
+
+- Using Amazon Bedrock Converse API from Python
+- Wrapping MCP tool discovery and execution behind a client
+- Registering tool schemas for model tool use
+- Maintaining a simple interactive chat loop
+- Running Bedrock-supported models with external tools
+
+## Tech Stack
+
+- Python
+- boto3 / Amazon Bedrock Runtime
+- MCP client concepts
+- SQLite demo tooling
+
+## Repository Structure
+
+```text
+.
+├── app.py                 # Interactive CLI entry point
+├── converse_agent.py      # Bedrock Converse agent loop
+├── converse_tools.py      # Tool registration and execution helpers
+├── mcp_client.py          # MCP server communication wrapper
+├── requirements.txt       # Python dependencies
+├── LICENSE
+└── CODE_OF_CONDUCT.md
+```
 
 ## Prerequisites
 
 - Python 3.8+
-- AWS account with Bedrock access
+- AWS account with Bedrock model access enabled
 - AWS credentials configured locally
-- SQLite database (Follow the instructions in the [MCP Quick Start Guide](https://modelcontextprotocol.io/quickstart) to set this up.)
+- A local MCP-compatible tool server or demo setup
+- SQLite database if following the original MCP quick-start flow
 
-## Installation
+## Setup
 
-1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd <project-directory>
-```
-
-2. Create and activate a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install required packages:
-```bash
+git clone https://github.com/sss2107/amazon-bedrock-mcp.git
+cd amazon-bedrock-mcp
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Configuration
+Configure AWS credentials with one of the standard AWS SDK methods:
 
-1. Ensure AWS credentials are properly configured in `~/.aws/credentials` or via environment variables:
 ```bash
-export AWS_ACCESS_KEY_ID=your_access_key
-export AWS_SECRET_ACCESS_KEY=your_secret_key
+aws configure
+```
+
+Or export environment variables:
+
+```bash
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
 export AWS_DEFAULT_REGION=us-west-2
 ```
 
-2. The default configuration uses:
-- Model: anthropic.claude-3-5-sonnet-20241022-v2:0
-- Region: us-west-2
-- SQLite database path: ~/test.db
+## Run
 
-## Project Structure
-
-- `app.py`: Main application entry point and interactive loop
-- `converse_agent.py`: Core agent implementation with Bedrock integration
-- `converse_tools.py`: Tool management and execution system
-- `mcp_client.py`: MCP (Model Control Protocol) client implementation
-
-## Usage
-
-1. Start the application:
 ```bash
 python app.py
 ```
 
-2. Enter prompts when prompted. The agent will:
-- Process your input
-- Execute any necessary tools
-- Provide responses
-- Maintain conversation context
+Type prompts in the terminal. The agent sends messages to Bedrock, handles model responses, executes requested tools, and keeps the conversation moving until you exit.
 
-3. Exit the application by typing 'quit', 'exit', 'q', or using Ctrl+C
+## Configuration Notes
 
-## Key Components
+The demo defaults can be adapted in code for:
 
-### ConverseAgent
-The main agent class that:
-- Manages conversation flow
-- Integrates with Bedrock
-- Handles tool execution
-- Processes responses
+- Bedrock region
+- Model ID
+- MCP server command / connection settings
+- SQLite database path
 
-Reference: 
-```python:converse_agent.py
-startLine: 3
-endLine: 109
-```
+## Security Notes
 
-### ConverseToolManager
-Manages tool registration and execution:
-- Tool registration with schemas
-- Name sanitization
-- Tool execution handling
-
-Reference:
-```python:converse_tools.py
-startLine: 5
-endLine: 76
-```
-
-### MCPClient
-Handles communication with the MCP server:
-- Tool discovery
-- Tool execution
-- Server connection management
-
-Reference:
-```python:mcp_client.py
-startLine: 6
-endLine: 48
-```
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+- Do not commit AWS credentials or local database secrets.
+- Keep tool permissions narrow; MCP tools can expose filesystem, database, or network access depending on the server.
+- Review every tool schema before exposing it to a model.
 
 ## License
 
-This library is licensed under the MIT-0 License. See the LICENSE file.
+This project is licensed under the terms in [LICENSE](LICENSE).
